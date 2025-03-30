@@ -144,17 +144,17 @@ const HomePage = () => {
                   ChatGPT
                 </a>
               </div>
-              Prompt: <br />
+              Prompt: (Esse é o prompt que eu uso, mas você pode usar o que quiser e ordernar do seu jeito)<br />
               <code>
                 Converta as tabelas dos arquivos fornecidos em um único objeto
                 JSON, seguindo estas regras: 1. Use os nomes dos materiais como
                 chaves, sem acentuação. 2. A primeira letra de cada palavra
                 principal deve ser maiúscula, exceto preposições/artigos (ex:
                 "de", "e"). 3. Mantenha os valores numéricos como inteiros
-                (exemplo: "2.466" vira 2466). Exemplo de conversão: -
-                "Purificadores de água" → "Purificadores de Agua" - "Membrana de
-                isolamento" → "Membrana de Isolamento" - "Frutas e verduras" →
-                "Frutas e Verduras"
+                (exemplo: "2.466" vira 2466). 4. Ordene as entradas do maior
+                para o menor valor numérico. Exemplo de conversão e ordenação: -
+                Entrada original: "Aço": 2.466 → "Aco": 2466 (primeiro item no
+                JSON) - "Titânio": 1.805 → "Titanio": 1805 (segundo item)
               </code>
             </p>
             <p>
