@@ -304,7 +304,7 @@ body {
 button {
   padding: 8px 16px;
   border: none;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   cursor: pointer;
   transition: filter 0.3s;
   font-weight: 500;
@@ -484,7 +484,6 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .nav-left:hover {
@@ -610,7 +609,7 @@ button:hover {
 
 .name-modal input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4caf50;
 }
 
 .modal-actions {
@@ -620,7 +619,7 @@ button:hover {
 }
 
 .confirm-btn {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -670,7 +669,6 @@ button:hover {
 .upload-button:hover {
   filter: brightness(1.1);
 }
-
 
 /* Ajuste a seção da tabela existente */
 
@@ -936,7 +934,7 @@ code {
   background: var(--bg-color);
   padding: 0.3rem 0.5rem;
   border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   display: inline-block;
   margin: 0.5rem 0;
   border: 1px solid var(--border-color);
@@ -947,20 +945,20 @@ code {
   .home-container h1 {
     font-size: 2rem;
   }
-  
+
   .step {
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   .step-content {
     order: 2;
   }
-  
+
   .guide-section {
     padding: 1.5rem;
   }
-  
+
   .cta-button {
     width: 100%;
     padding: 1rem;
@@ -1025,4 +1023,32 @@ code {
   padding: 1rem;
   margin: 1.5rem 0;
   border-radius: 4px;
+}
+
+/* prompt do codigo */
+
+#copyButton {
+  max-width: 40px;
+  max-height: 40px;
+  padding: 4px 8px;
+  margin: 5px 15px 5px 5px;
+  background: #4caf50; /* Cor de fundo */
+  color: white; /* Cor do texto */
+  border-radius: 10px;
+}
+
+#copyButton img {
+  border: none; /* Sem borda */
+  width: 100%; /* Largura total */
+  height: 100%; /* Altura total */
+
+}
+
+#copyButton:hover {
+  background: #113612; /* Cor de fundo ao passar o mouse */
+}
+
+.copy-icon {
+  display: inline-block; /* Imagem precisa de display block */
+  vertical-align: middle; /* Alinhamento correto */
 }

@@ -5,6 +5,19 @@ import blocoNotasImg from "../assets/images-readme/blocoNotas.png";
 import addColaboradorImg from "../assets/add-colaborador.png"; // Adicione esta imagem
 import inventarioVazioImg from "../assets/inventario-vazio.png"; // Adicione esta imagem
 
+const copyPrompt = () => {
+  const codeContent = document.getElementById("prompt")?.textContent || "";
+  
+  navigator.clipboard.writeText(codeContent)
+    .then(() => {
+      
+      console.log("Copiado!");
+    })
+    .catch((err) => {
+      console.error("Erro:", err);
+    });
+};
+
 const HomePage = () => {
   return (
     <div className="home-container">
@@ -144,8 +157,16 @@ const HomePage = () => {
                   ChatGPT
                 </a>
               </div>
-              Prompt: (Esse é o prompt que eu uso, mas você pode usar o que quiser e ordernar do seu jeito)<br />
-              <code>
+              Prompt: (Esse é o prompt que eu uso, mas você pode usar o que
+              quiser e ordernar do seu jeito)
+              <br />
+              <code id="prompt">
+                <button id="copyButton" onClick={copyPrompt}>
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/1621/1621635.png"
+                    alt="Copiar"
+                  />
+                </button>
                 Converta as tabelas dos arquivos fornecidos em um único objeto
                 JSON, seguindo estas regras: 1. Use os nomes dos materiais como
                 chaves, sem acentuação. 2. A primeira letra de cada palavra
