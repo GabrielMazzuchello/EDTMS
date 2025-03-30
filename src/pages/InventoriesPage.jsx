@@ -7,6 +7,8 @@ import {
   orderBy,
   deleteDoc,
   doc,
+  updateDoc,
+  arrayRemove
 } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
 import { Link } from "react-router-dom";
@@ -18,7 +20,7 @@ const InventoriesPage = () => {
   const [error, setError] = useState("");
 
   const fetchInventories = async () => {
-    setLoading(true); // Ativa loading ao recarregar
+    setLoading(true);
     try {
       const q = query(
         collection(db, "inventories"),
@@ -32,6 +34,7 @@ const InventoriesPage = () => {
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate(),
         updatedAt: doc.data().updatedAt?.toDate(),
+        itemCount: doc.data().items?.length || 0 // Novo campo adicionado
       }));
 
       setInventories(inventoriesData);
@@ -44,21 +47,14 @@ const InventoriesPage = () => {
     }
   };
 
-  // Função para excluir inventário
   const handleDelete = async (inventoryId, ownerId) => {
     try {
-      // Verifica se o usuário atual é o dono
       if (auth.currentUser.uid !== ownerId) {
         alert("Apenas o dono pode excluir este inventário!");
         return;
       }
 
-      if (
-        !window.confirm(
-          "Tem certeza que deseja excluir permanentemente este inventário?"
-        )
-      )
-        return;
+      if (!window.confirm("Tem certeza que deseja excluir permanentemente este inventário?")) return;
 
       await deleteDoc(doc(db, "inventories", inventoryId));
       setInventories((prev) => prev.filter((item) => item.id !== inventoryId));
@@ -66,6 +62,23 @@ const InventoriesPage = () => {
     } catch (error) {
       console.error("Erro ao excluir:", error);
       alert("Erro ao excluir inventário");
+    }
+  };
+
+  // Nova função para sair do inventário
+  const handleLeave = async (inventoryId) => {
+    try {
+      if (!window.confirm("Tem certeza que deseja sair deste inventário?")) return;
+      
+      await updateDoc(doc(db, "inventories", inventoryId), {
+        collaborators: arrayRemove(auth.currentUser.uid)
+      });
+      
+      setInventories((prev) => prev.filter((item) => item.id !== inventoryId));
+      alert("Você saiu do inventário com sucesso!");
+    } catch (error) {
+      console.error("Erro ao sair:", error);
+      alert("Erro ao sair do inventário");
     }
   };
 
@@ -99,15 +112,25 @@ const InventoriesPage = () => {
           <div key={inventory.id} className="inventory-card">
             <div className="card-header">
               <h3>{inventory.name || "Inventário Sem Nome"}</h3>
-              {auth.currentUser?.uid === inventory.owner && (
-                <button
-                  onClick={() => handleDelete(inventory.id, inventory.owner)}
-                  className="delete-btn"
-                  title="Excluir inventário"
-                >
-                  🗑️
-                </button>
-              )}
+              <div className="card-actions">
+                {auth.currentUser?.uid === inventory.owner ? (
+                  <button
+                    onClick={() => handleDelete(inventory.id, inventory.owner)}
+                    className="delete-btn"
+                    title="Excluir inventário"
+                  >
+                    🗑️
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleLeave(inventory.id)}
+                    className="leave-btn"
+                    title="Sair do inventário"
+                  >
+                    Sair
+                  </button>
+                )}
+              </div>
             </div>
             <Link to={`/inventory/${inventory.id}`} className="inventory-link">
               <div className="meta-info">
@@ -115,9 +138,10 @@ const InventoriesPage = () => {
                   🕒 Criado em: {inventory.createdAt?.toLocaleDateString()}
                 </span>
                 <span>
-                  ✏️ Última atualização:{" "}
-                  {inventory.updatedAt?.toLocaleDateString()}
+                  ✏️ Última atualização: {inventory.updatedAt?.toLocaleDateString()}
                 </span>
+                {/* Nova linha adicionada */}
+                <span>📦 Itens: {inventory.itemCount}</span>
               </div>
             </Link>
           </div>

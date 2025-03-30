@@ -4,40 +4,78 @@ import { db } from "../services/firebase";
 import ProgressBar from "./ProgressBar";
 import "../styles/main.css";
 
-const InventoryTable = ({ inventoryId }) => {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState("");
-  const [newItem, setNewItem] = useState({ material: "", quantidade: "" });
+// Função auxiliar para normalização
+const normalizeMaterial = (str) => {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/(^\w{1})|(\s+\w{1})/g, (letra) => letra.toUpperCase());
+};
 
-  // Firebase operations
+const InventoryTable = ({ inventoryId }) => {
+  // Estados
+  const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState({ material: "", quantidade: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // Carregar dados do Firestore
   useEffect(() => {
     if (!inventoryId) return;
 
     const unsubscribe = onSnapshot(
       doc(db, "inventories", inventoryId),
-      (doc) => doc.exists() && setItems(doc.data().items || []),
+      (doc) => {
+        if (doc.exists()) {
+          setItems(doc.data().items || []);
+          setError("");
+        } else {
+          setError("Inventário não encontrado");
+        }
+        setLoading(false);
+      },
       (error) => {
-        setError("Erro ao carregar inventário");
+        setError("Erro ao carregar dados");
         console.error("Erro:", error);
+        setLoading(false);
       }
     );
 
     return () => unsubscribe();
   }, [inventoryId]);
 
-  const updateInventory = async (newItems) => {
+  // Atualizar inventário no Firestore
+  const updateInventory = async (updatedItems) => {
     try {
       await updateDoc(doc(db, "inventories", inventoryId), {
-        items: newItems,
+        items: updatedItems,
         updatedAt: new Date(),
       });
     } catch (error) {
-      setError("Erro ao atualizar inventário");
+      setError("Erro ao salvar alterações");
       console.error("Erro:", error);
     }
   };
 
-  // Handlers
+  // Handlers genéricos
+  const handleItemAction = async (action, itemId, value = null) => {
+    const newItems = items.map(item => {
+      if (item.id !== itemId) return item;
+      
+      switch(action) {
+        case 'SUBTRACT':
+          return { ...item, restante: Math.max(0, item.restante - value) };
+        case 'RESET':
+          return { ...item, restante: 0 };
+        default:
+          return item;
+      }
+    });
+    
+    await updateInventory(action === 'REMOVE' ? items.filter(i => i.id !== itemId) : newItems);
+  };
+
   const handleAddItem = async () => {
     if (!newItem.material.trim() || !newItem.quantidade) {
       alert("Preencha todos os campos!");
@@ -45,44 +83,31 @@ const InventoryTable = ({ inventoryId }) => {
     }
 
     try {
-      const normalizedMaterial = newItem.material.trim().toLowerCase();
-      const newQuantity = Number(newItem.quantidade);
-
-      // Verifica se o material já existe
-      const existingItemIndex = items.findIndex(
-        (item) => item.material.trim().toLowerCase() === normalizedMaterial
+      const normalized = normalizeMaterial(newItem.material.trim());
+      const quantity = Number(newItem.quantidade);
+      
+      const existingIndex = items.findIndex(
+        item => normalizeMaterial(item.material) === normalized
       );
 
-      let updatedItems;
-
-      if (existingItemIndex !== -1) {
-        // Atualiza o item existente
-        updatedItems = items.map((item, index) => {
-          if (index === existingItemIndex) {
-            return {
-              ...item,
-              quantidade: item.quantidade + newQuantity,
-              restante: item.restante + newQuantity,
-            };
-          }
-          return item;
-        });
+      const updatedItems = [...items];
+      
+      if (existingIndex > -1) {
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantidade: updatedItems[existingIndex].quantidade + quantity,
+          restante: updatedItems[existingIndex].restante + quantity
+        };
       } else {
-        // Cria novo item
-        const newItemData = {
+        updatedItems.push({
           id: Date.now().toString(),
           material: newItem.material.trim(),
-          quantidade: newQuantity,
-          restante: newQuantity,
-        };
-        updatedItems = [...items, newItemData];
+          quantidade: quantity,
+          restante: quantity
+        });
       }
 
-      await updateDoc(doc(db, "inventories", inventoryId), {
-        items: updatedItems,
-        updatedAt: new Date(),
-      });
-
+      await updateInventory(updatedItems);
       setNewItem({ material: "", quantidade: "" });
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
@@ -90,72 +115,38 @@ const InventoryTable = ({ inventoryId }) => {
     }
   };
 
-  const handleSubtract = async (id, value) => {
-    const newItems = items.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            restante: Math.max(0, item.restante - value),
-          }
-        : item
-    );
-    await updateInventory(newItems);
-  };
+  // Cálculos do progresso
+  const total = items.reduce((acc, item) => acc + item.quantidade, 0);
+  const remaining = items.reduce((acc, item) => acc + item.restante, 0);
+  const used = total - remaining;
+  const progress = total > 0 ? (used / total) * 100 : 0;
 
-  const handleReset = async (id) => {
-    const newItems = items.map((item) =>
-      item.id === id ? { ...item, restante: 0 } : item
-    );
-    await updateInventory(newItems);
-  };
-
-  // Função para normalizar o nome do material
-  const normalizeMaterial = (str) => {
-    return str
-      .normalize("NFD") // Remove acentos
-      .replace(/[\u0300-\u036f]/g, "") // Remove caracteres diacríticos
-      .toLowerCase() // Tudo para minúsculas
-      .replace(/(^\w{1})|(\s+\w{1})/g, (letra) => letra.toUpperCase()); // Primeira letra maiúscula
-  };
-
-  const handleRemove = async (id) => {
-    const newItems = items.filter((item) => item.id !== id);
-    await updateInventory(newItems);
-  };
-
-  // Progress calculations
-  const totalItems = items.reduce((acc, item) => acc + item.quantidade, 0);
-  const remainingItems = items.reduce((acc, item) => acc + item.restante, 0);
-  const usedItems = totalItems - remainingItems;
-  const progress = totalItems > 0 ? (usedItems / totalItems) * 100 : 0;
+  if (loading) return <div className="loading">Carregando inventário...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="inventory-container">
-      {error && <div className="error">{error}</div>}
-
-      {/* Barra do Progresso */}
+      {/* Seção de Progresso */}
       <div className="progress-section">
         <h3>Progresso do Trabalho</h3>
+        <ProgressBar percentage={progress} />
         <div className="progress-stats">
           <div>
-            <span className="stat-number">{usedItems.toLocaleString()}</span>
-            <span className="stat-label"> Materiais Usados</span>
+            <span className="stat-number">{used.toLocaleString()}</span>
+            <span className="stat-label"> Usados</span>
           </div>
           <div>
-            <span className="stat-number">
-              {remainingItems.toLocaleString()}
-            </span>
+            <span className="stat-number">{remaining.toLocaleString()}</span>
             <span className="stat-label"> Restantes</span>
           </div>
           <div>
-            <span className="stat-number">{totalItems.toLocaleString()}</span>
+            <span className="stat-number">{total.toLocaleString()}</span>
             <span className="stat-label"> Total</span>
           </div>
         </div>
-        <ProgressBar percentage={progress} />
       </div>
 
-      {/* Materials Table */}
+      {/* Tabela de Materiais */}
       <div className="table-container">
         <table className="materials-table">
           <thead>
@@ -183,7 +174,7 @@ const InventoryTable = ({ inventoryId }) => {
                       if (e.key === "Enter") {
                         const value = parseInt(e.target.value);
                         if (!isNaN(value) && value > 0) {
-                          handleSubtract(item.id, value);
+                          handleItemAction('SUBTRACT', item.id, value);
                           e.target.value = "";
                         }
                       }
@@ -193,13 +184,13 @@ const InventoryTable = ({ inventoryId }) => {
                 <td>
                   <div className="action-buttons">
                     <button
-                      onClick={() => handleReset(item.id)}
+                      onClick={() => handleItemAction('RESET', item.id)}
                       className="reset-btn"
                     >
                       Zerar
                     </button>
                     <button
-                      onClick={() => handleRemove(item.id)}
+                      onClick={() => handleItemAction('REMOVE', item.id)}
                       className="remove-btn"
                     >
                       Remover
@@ -210,7 +201,7 @@ const InventoryTable = ({ inventoryId }) => {
             ))}
           </tbody>
 
-          {/* Add Item Section */}
+          {/* Formulário de Adição */}
           <tfoot>
             <tr>
               <td colSpan="5">
@@ -220,21 +211,20 @@ const InventoryTable = ({ inventoryId }) => {
                       type="text"
                       placeholder="Novo material"
                       value={newItem.material}
-                      onChange={(e) =>
-                        setNewItem({
-                          ...newItem,
-                          material: normalizeMaterial(e.target.value),
-                        })
-                      }
+                      onChange={(e) => setNewItem({
+                        ...newItem,
+                        material: normalizeMaterial(e.target.value)
+                      })}
                     />
                     <input
                       type="number"
                       placeholder="Qtd."
                       min="1"
                       value={newItem.quantidade}
-                      onChange={(e) =>
-                        setNewItem({ ...newItem, quantidade: e.target.value })
-                      }
+                      onChange={(e) => setNewItem({
+                        ...newItem,
+                        quantidade: e.target.value
+                      })}
                     />
                     <button onClick={handleAddItem} className="add-item-button">
                       ➕ Adicionar

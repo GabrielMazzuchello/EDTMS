@@ -1052,3 +1052,29 @@ code {
   display: inline-block; /* Imagem precisa de display block */
   vertical-align: middle; /* Alinhamento correto */
 }
+
+/* Estilos para o botão Sair */
+.leave-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.leave-btn:hover {
+  opacity: 0.8;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Ajuste para exibição dos itens */
+.meta-info span {
+  display: block;
+  margin: 0.3rem 0;
+}
