@@ -7,6 +7,11 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1500,
     outDir: "dist",
+    rollupOptions: {
+      input: {
+        main: "index.html", // Mantenha como index.html
+      },
+    },
     assetsDir: "assets",
   },
 });
