@@ -1,0 +1,35 @@
+name: Deploy na Square Cloud
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+                node-version: 20
+
+          - name: Install Dependencies
+            run: npm install
+
+          - name: Build
+            run: npm run build
+
+          - name: Zip dist folder
+            uses: montudor/action-zip@v1
+            with:
+                args: zip -qq -r dist.zip dist
+
+          - name: Deploy to Square Cloud
+            uses: squarecloudofc/github-action@v1.1.0
+            with:
+                file: dist.zip
+                squarecloud_app_id: ${{ secrets.https://api.squarecloud.app/v2/git/webhook/842e7faabe38087be242c4cdc0d045a7bdbae6653a4d912893781cbcebab614bfccbcf0a9afcdf5ac43d6568f4804379 }}
+                squarecloud_api_key: ${{ secrets.a8a9207da568c0578d87dae1cf3cccfbf59b64df-c679b6bcce502873af3f008de6deca37331efc4773e0e7bf7d6018a7d718fcf2 }}
