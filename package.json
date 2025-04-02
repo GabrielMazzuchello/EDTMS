@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "start": "vite preview --host 0.0.0.0 --port $PORT",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "curl -X POST -H 'Content-Type: application/json' -d '{\"ref\":\"SquareCloud\"}'https://api.squarecloud.app/v2/git/webhook/9983d4e71e10b3c247b630e078678aa03240e65940ced5667b927f59864db3bd642c356c7bf74067f1bb18f622f8e475"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
