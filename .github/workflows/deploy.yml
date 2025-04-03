@@ -32,4 +32,5 @@ jobs:
           cd dist
           git add .
           git commit -m "Deploy automático"
-          git push origin main --force
+          git branch -M main  # Força renomear a branch atual para main
+          git push -u origin main --force
