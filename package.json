@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "start": "vite preview --host 0.0.0.0 --port $PORT",
     "predeploy": "npm run build",
-    "deploy": "npm run build && cd dist && git add . && git commit -m \"deploy para Square cloud\" && git push origin main"
+    "deploy": "npm run build && (cd dist && git add . && git commit -m \"deploy\" && git push origin main --force) || echo \"Erro no deploy\""
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
