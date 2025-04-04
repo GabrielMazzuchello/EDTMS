@@ -26,7 +26,8 @@ const HomePage = () => {
         <h5>Desenvolvido por GabrielDesuBR</h5>
       </header>
 
-      <div className="beta-alert">
+      {/* Codigo de alertas (manterei para possiveis avizos futuros) */}
+      {/* <div className="beta-alert">
         <h3>⚠️ Versão Beta - Aviso Importante</h3>
         <p>
           Devido às limitações do domínio gratuito, recarregar a página fora da
@@ -36,7 +37,7 @@ const HomePage = () => {
           </Link>
           .
         </p>
-      </div>
+      </div> */}
 
       <div className="guide-section">
         <h2>📘 Guia Rápido de Uso</h2>
