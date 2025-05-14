@@ -259,6 +259,11 @@ body {
   color: var(--text-primary);
 }
 
+.sync-btn-collab {
+  min-width: 120px;
+  min-height: 45px;
+}
+
 /* Utilidades */
 .error {
   color: var(--error-color);
@@ -271,7 +276,6 @@ body {
 
 .loading {
   color: var(--text-secondary);
-  padding: 2rem;
   text-align: center;
 }
 
@@ -304,7 +308,7 @@ body {
 button {
   padding: 8px 16px;
   border: none;
-  /* border-radius: 6px; */
+  border-radius: 6px;
   cursor: pointer;
   transition: filter 0.3s;
   font-weight: 500;
@@ -1043,7 +1047,6 @@ code {
   border: none; /* Sem borda */
   width: 100%; /* Largura total */
   height: 100%; /* Altura total */
-
 }
 
 #copyButton:hover {

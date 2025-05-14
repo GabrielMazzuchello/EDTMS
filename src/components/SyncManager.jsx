@@ -41,7 +41,7 @@ const SyncManager = ({ inventoryId }) => {
         <button 
           onClick={handleAddCollaborator}
           disabled={loading}
-          className={loading ? "loading" : ""}
+          className={`sync-btn-collab ${loading ? "loading" : ""}`}
         >
           {loading ? "Adicionando..." : "Adicionar"}
         </button>
