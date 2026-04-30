@@ -847,7 +847,7 @@ button:hover {
 
 /* CSS do alerta (manterei para possiveis avizos no futuro) */
 
-/* .beta-alert {
+.beta-alert {
   background: #332f1f;
   border: 2px solid #ffd700;
   border-radius: 12px;
@@ -862,7 +862,7 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-} */
+}
 
 .guide-section {
   background: var(--surface-color);

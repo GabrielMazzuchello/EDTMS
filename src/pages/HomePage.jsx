@@ -7,10 +7,10 @@ import inventarioVazioImg from "../assets/inventario-vazio.png"; // Adicione est
 
 const copyPrompt = () => {
   const codeContent = document.getElementById("prompt")?.textContent || "";
-  
-  navigator.clipboard.writeText(codeContent)
+
+  navigator.clipboard
+    .writeText(codeContent)
     .then(() => {
-      
       console.log("Copiado!");
     })
     .catch((err) => {
@@ -23,7 +23,7 @@ const HomePage = () => {
     <div className="home-container">
       <header className="hero-section">
         <h1>EDTMS - Elite Dangerous Tabela de Materiais Sincronizada</h1>
-        <h5>Desenvolvido por GabrielDesuBR</h5>
+        <h5>Desenvolvido por Gabriel Mazzuchello Dal Molin</h5>
       </header>
 
       {/* Codigo de alertas (manterei para possiveis avizos futuros) */}
@@ -41,6 +41,21 @@ const HomePage = () => {
 
       <div className="guide-section">
         <h2>📘 Guia Rápido de Uso</h2>
+        <h3>
+          App para ler seu cargo e contabilizar automaticamente os materiais
+          comprados
+        </h3>
+        <br />
+        <p>
+          Coloque seu UID e carregue as construções da sua conta após isso so
+          selecionar a construção que esteja fazendo
+        </p>
+        <div className="tools-grid">
+          <a className="tool-card" href="arquivos/EDTMS-CS.zip" download>
+            EDTMS-CS
+          </a>
+        </div>
+        <br />
         <p>
           <strong>Temos duas formas de criar um inventário:</strong>
         </p>
