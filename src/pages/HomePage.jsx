@@ -51,7 +51,7 @@ const HomePage = () => {
           selecionar a construção que esteja fazendo
         </p>
         <div className="tools-grid">
-          <a className="tool-card" href="/arquivos/EDTMS-CS.zip" download>
+          <a className="tool-card" href="/arquivos/EDTMS-CS.rar" type="application/zip" download>
             EDTMS-CS
           </a>
         </div>
