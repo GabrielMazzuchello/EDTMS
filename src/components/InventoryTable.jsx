@@ -39,7 +39,7 @@ const InventoryTable = ({ inventoryId }) => {
         setError("Erro ao carregar dados");
         console.error("Erro:", error);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -60,20 +60,22 @@ const InventoryTable = ({ inventoryId }) => {
 
   // Handlers genéricos
   const handleItemAction = async (action, itemId, value = null) => {
-    const newItems = items.map(item => {
+    const newItems = items.map((item) => {
       if (item.id !== itemId) return item;
-      
-      switch(action) {
-        case 'SUBTRACT':
+
+      switch (action) {
+        case "SUBTRACT":
           return { ...item, restante: Math.max(0, item.restante - value) };
-        case 'RESET':
+        case "RESET":
           return { ...item, restante: 0 };
         default:
           return item;
       }
     });
-    
-    await updateInventory(action === 'REMOVE' ? items.filter(i => i.id !== itemId) : newItems);
+
+    await updateInventory(
+      action === "REMOVE" ? items.filter((i) => i.id !== itemId) : newItems,
+    );
   };
 
   const handleAddItem = async () => {
@@ -85,25 +87,25 @@ const InventoryTable = ({ inventoryId }) => {
     try {
       const normalized = normalizeMaterial(newItem.material.trim());
       const quantity = Number(newItem.quantidade);
-      
+
       const existingIndex = items.findIndex(
-        item => normalizeMaterial(item.material) === normalized
+        (item) => normalizeMaterial(item.material) === normalized,
       );
 
       const updatedItems = [...items];
-      
+
       if (existingIndex > -1) {
         updatedItems[existingIndex] = {
           ...updatedItems[existingIndex],
           quantidade: updatedItems[existingIndex].quantidade + quantity,
-          restante: updatedItems[existingIndex].restante + quantity
+          restante: updatedItems[existingIndex].restante + quantity,
         };
       } else {
         updatedItems.push({
           id: Date.now().toString(),
           material: newItem.material.trim(),
           quantidade: quantity,
-          restante: quantity
+          restante: quantity,
         });
       }
 
@@ -133,7 +135,7 @@ const InventoryTable = ({ inventoryId }) => {
         <div className="progress-stats">
           <div>
             <span className="stat-number">{used.toLocaleString()}</span>
-            <span className="stat-label"> Usados</span>
+            <span className="stat-label"> Transportados</span>
           </div>
           <div>
             <span className="stat-number">{remaining.toLocaleString()}</span>
@@ -174,7 +176,7 @@ const InventoryTable = ({ inventoryId }) => {
                       if (e.key === "Enter") {
                         const value = parseInt(e.target.value);
                         if (!isNaN(value) && value > 0) {
-                          handleItemAction('SUBTRACT', item.id, value);
+                          handleItemAction("SUBTRACT", item.id, value);
                           e.target.value = "";
                         }
                       }
@@ -184,13 +186,13 @@ const InventoryTable = ({ inventoryId }) => {
                 <td>
                   <div className="action-buttons">
                     <button
-                      onClick={() => handleItemAction('RESET', item.id)}
+                      onClick={() => handleItemAction("RESET", item.id)}
                       className="reset-btn"
                     >
                       Zerar
                     </button>
                     <button
-                      onClick={() => handleItemAction('REMOVE', item.id)}
+                      onClick={() => handleItemAction("REMOVE", item.id)}
                       className="remove-btn"
                     >
                       Remover
@@ -211,20 +213,24 @@ const InventoryTable = ({ inventoryId }) => {
                       type="text"
                       placeholder="Novo material"
                       value={newItem.material}
-                      onChange={(e) => setNewItem({
-                        ...newItem,
-                        material: normalizeMaterial(e.target.value)
-                      })}
+                      onChange={(e) =>
+                        setNewItem({
+                          ...newItem,
+                          material: normalizeMaterial(e.target.value),
+                        })
+                      }
                     />
                     <input
                       type="number"
                       placeholder="Qtd."
                       min="1"
                       value={newItem.quantidade}
-                      onChange={(e) => setNewItem({
-                        ...newItem,
-                        quantidade: e.target.value
-                      })}
+                      onChange={(e) =>
+                        setNewItem({
+                          ...newItem,
+                          quantidade: e.target.value,
+                        })
+                      }
                     />
                     <button onClick={handleAddItem} className="add-item-button">
                       ➕ Adicionar
