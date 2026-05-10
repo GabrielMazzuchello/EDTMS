@@ -5,6 +5,8 @@ import blocoNotasImg from "../assets/images-readme/blocoNotas.png";
 import addColaboradorImg from "../assets/add-colaborador.png"; // Adicione esta imagem
 import inventarioVazioImg from "../assets/inventario-vazio.png"; // Adicione esta imagem
 
+const versaoEDTMSCS = "1.1";
+
 const copyPrompt = () => {
   const codeContent = document.getElementById("prompt")?.textContent || "";
 
@@ -51,8 +53,13 @@ const HomePage = () => {
           selecionar a construção que esteja fazendo
         </p>
         <div className="tools-grid">
-          <a className="tool-card" href="/arquivos/EDTMS-CS.rar" type="application/zip" download>
-            EDTMS-CS
+          <a
+            className="tool-card"
+            href={`/arquivos/EDTMS-CS.rar?v=${versaoEDTMSCS}`}
+            type="application/zip"
+            download
+          >
+            Baixar EDTMS-CS {versaoEDTMSCS}
           </a>
         </div>
         <br />
