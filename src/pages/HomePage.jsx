@@ -5,7 +5,7 @@ import blocoNotasImg from "../assets/images-readme/blocoNotas.png";
 import addColaboradorImg from "../assets/add-colaborador.png"; // Adicione esta imagem
 import inventarioVazioImg from "../assets/inventario-vazio.png"; // Adicione esta imagem
 
-const versaoEDTMSCS = "1.1";
+const versaoEDTMSCS = "1.5";
 
 const copyPrompt = () => {
   const codeContent = document.getElementById("prompt")?.textContent || "";
