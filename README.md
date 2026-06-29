@@ -1,4 +1,4 @@
-# EDMC - Sistema de Gerenciamento de Inventários
+# EDTMS - Elite Dangerous Tabela de Materiais Sincronizados
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
